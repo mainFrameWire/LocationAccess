@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Display Location</string>
+    <string name="location_will_be_displayed_here">Location Will Be Displayed Here</string>
+    <string name="press_to_get_location">Press To Get Location</string>
+</resources>
