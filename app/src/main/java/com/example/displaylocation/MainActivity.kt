@@ -6,18 +6,22 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
 import android.view.View
+import android.widget.Toast
+import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.jar.Manifest
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    lateinit var locationRequest: LocationRequest
-    lateinit var loactionCallback: LocationCallback
+   private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private lateinit var locationRequest: LocationRequest
+    private lateinit var loactionCallback: LocationCallback
 
-    val REQUEST_CODE = 1000;
+    val REQUEST_CODE = 1000
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -42,45 +46,83 @@ class MainActivity : AppCompatActivity() {
 
             location_button.setOnClickListener(View.OnClickListener {
 
-                if(ActivityCompat.checkSelfPermission(this@MainActivity, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(this@MainActivity, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-                {
-                    ActivityCompat.requestPermissions(this@MainActivity, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE)
+                if (ActivityCompat.checkSelfPermission(
+                        this@MainActivity,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(
+                        this@MainActivity,
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    ActivityCompat.requestPermissions(
+                        this@MainActivity,
+                        arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                        REQUEST_CODE
+                    )
                     return@OnClickListener
                 }
-                fusedLocationProviderClient.requestLocationUpdates(locationRequest, loactionCallback  , Looper.myLooper())
+                fusedLocationProviderClient.requestLocationUpdates(
+                    locationRequest,
+                    loactionCallback,
+                    Looper.myLooper()
+                )
             });
 
-//            location_button.setOnClickListener(View.OnClickListener {
+
+        }}
+
+
+        private fun buildLocationCallBack() {
+            loactionCallback = object : LocationCallback() {
+                override fun onLocationResult(p0: LocationResult?) {
+                    val location = p0!!.locations.get(p0.locations.size - 1)
+                    location_text.text =
+                        location.latitude.toString() + " " + location.longitude.toString()
+
+                val loc = location.latitude.toString() + " " + location.longitude.toString()
+
+                FirebaseDatabase.getInstance().getReference("Current Location").setValue(loc)
+
+
+
+//                    .addOnCompleteListener(OnCompleteListener<Void> {
 //
+//                        fun onComplete(@NonNull task: Task<Void>) {
 //
+//                            if (task.isSuccessful) {
+//                                Toast.makeText(
+//                                    applicationContext, "Location Saved",
+//                                    Toast.LENGTH_SHORT
+//                                ).show()
+//                            } else {
+//                                Toast.makeText(
+//                                    applicationContext, "Location Not Saved",
+//                                    Toast.LENGTH_SHORT
+//                                ).show()
+//                            }
+//                        }
+
 //
-//            });
-
-
-        }
-
-    }
+//                    })
 
 
 
-    private fun buildLocationCallBack() {
-        loactionCallback = object : LocationCallback() {
-            override fun onLocationResult(p0: LocationResult?) {
-                var location = p0!!.locations.get(p0!!.locations.size-1);
-                location_text.text = location.latitude.toString() + " " + location.longitude.toString()
+                }
             }
         }
-    }
-
     private fun buildLocationRequest() {
         locationRequest = LocationRequest()
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         locationRequest.interval = 5000
-        locationRequest.fastestInterval= 3000
+        locationRequest.fastestInterval = 3000
         locationRequest.smallestDisplacement = 10f
 
 
-    }
-}
+    } }
+
+
+
+
+
 
