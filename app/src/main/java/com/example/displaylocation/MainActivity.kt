@@ -2,14 +2,18 @@ package com.example.displaylocation
 
 
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.os.Looper
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
 
 
 
@@ -73,10 +78,18 @@ class MainActivity : AppCompatActivity() {
             loactionCallback = object : LocationCallback() {
                 override fun onLocationResult(p0: LocationResult?) {
                     val location = p0!!.locations.get(p0.locations.size - 1)
-                    location_text.text =
-                        location.latitude.toString() + " " + location.longitude.toString()
 
-                val loc = location.latitude.toString() + " " + location.longitude.toString()
+
+                    val addresses: List<Address>
+                    val geocoder: Geocoder = Geocoder(application, Locale.getDefault())
+
+                    addresses = geocoder.getFromLocation(location.latitude, location.longitude,
+                        1)
+                    val address = addresses[0].getAddressLine(0)
+                    
+// prints the address on the screen and saves it on the database
+                    location_text.text = address.toString()
+                    val loc =  address.toString()
 
                 FirebaseDatabase.getInstance().getReference("Current Location").setValue(loc)
                 }
