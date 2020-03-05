@@ -6,12 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
 import android.view.View
-import android.widget.Toast
-import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -83,31 +79,6 @@ class MainActivity : AppCompatActivity() {
                 val loc = location.latitude.toString() + " " + location.longitude.toString()
 
                 FirebaseDatabase.getInstance().getReference("Current Location").setValue(loc)
-
-
-
-//                    .addOnCompleteListener(OnCompleteListener<Void> {
-//
-//                        fun onComplete(@NonNull task: Task<Void>) {
-//
-//                            if (task.isSuccessful) {
-//                                Toast.makeText(
-//                                    applicationContext, "Location Saved",
-//                                    Toast.LENGTH_SHORT
-//                                ).show()
-//                            } else {
-//                                Toast.makeText(
-//                                    applicationContext, "Location Not Saved",
-//                                    Toast.LENGTH_SHORT
-//                                ).show()
-//                            }
-//                        }
-
-//
-//                    })
-
-
-
                 }
             }
         }
